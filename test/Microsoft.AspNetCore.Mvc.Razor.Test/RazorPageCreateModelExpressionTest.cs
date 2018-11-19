@@ -211,7 +211,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             var provider = new EmptyModelMetadataProvider();
             var modelExpressionProvider = new ModelExpressionProvider(
                 provider,
-                new ExpressionTextCache());
+                new ExpressionHelper());
 
             return modelExpressionProvider;
         }
@@ -222,7 +222,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             var viewData = new ViewDataDictionary<RazorPageCreateModelExpressionModel>(provider, new ModelStateDictionary());
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IModelMetadataProvider>(provider);
-            serviceCollection.AddSingleton<ExpressionTextCache, ExpressionTextCache>();
+            serviceCollection.AddSingleton<ExpressionHelper>();
 
             var httpContext = new DefaultHttpContext
             {

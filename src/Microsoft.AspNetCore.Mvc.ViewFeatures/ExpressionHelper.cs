@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -11,20 +12,24 @@ using System.Text;
 
 namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 {
-    internal static class ExpressionHelper
+    internal class ExpressionHelper
     {
-        public static string GetExpressionText(string expression)
+        private readonly ConcurrentDictionary<LambdaExpression, string> _expressionTextCache;
+
+        public ExpressionHelper()
         {
-            // If it's exactly "model", then give them an empty string, to replicate the lambda behavior.
-            return string.Equals(expression, "model", StringComparison.OrdinalIgnoreCase) ? string.Empty : expression;
+            _expressionTextCache = new ConcurrentDictionary<LambdaExpression, string>(LambdaExpressionComparer.Instance);
         }
 
-        public static string GetExpressionText(LambdaExpression expression)
+        public string GetExpressionText(LambdaExpression expression)
         {
-            return GetExpressionText(expression, expressionTextCache: null);
+            return GetExpressionText(expression, _expressionTextCache);
         }
 
-        public static string GetExpressionText(LambdaExpression expression, ExpressionTextCache expressionTextCache)
+        public static string GetUncachedExpressionText(LambdaExpression expression)
+            => GetExpressionText(expression, expressionTextCache: null);
+
+        private static string GetExpressionText(LambdaExpression expression, ConcurrentDictionary<LambdaExpression, string> expressionTextCache)
         {
             if (expression == null)
             {
@@ -32,7 +37,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             if (expressionTextCache != null &&
-                expressionTextCache.Entries.TryGetValue(expression, out var expressionText))
+                expressionTextCache.TryGetValue(expression, out var expressionText))
             {
                 return expressionText;
             }
@@ -145,7 +150,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 Debug.Assert(!doNotCache);
                 if (expressionTextCache != null)
                 {
-                    expressionTextCache.Entries.TryAdd(expression, string.Empty);
+                    expressionTextCache.TryAdd(expression, string.Empty);
                 }
 
                 return string.Empty;
@@ -202,7 +207,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             expressionText = builder.ToString();
             if (expressionTextCache != null && !doNotCache)
             {
-                expressionTextCache.Entries.TryAdd(expression, expressionText);
+                expressionTextCache.TryAdd(expression, expressionText);
             }
 
             return expressionText;

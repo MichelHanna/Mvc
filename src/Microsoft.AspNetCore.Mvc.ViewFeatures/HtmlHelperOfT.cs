@@ -10,24 +10,21 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures.Buffers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.AspNetCore.Mvc.ViewFeatures
 {
     public class HtmlHelper<TModel> : HtmlHelper, IHtmlHelper<TModel>
     {
-        private readonly ExpressionTextCache _expressionTextCache;
+        private ExpressionHelper _expressionHelper;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HtmlHelper{TModel}"/> class.
-        /// </summary>
         public HtmlHelper(
             IHtmlGenerator htmlGenerator,
             ICompositeViewEngine viewEngine,
             IModelMetadataProvider metadataProvider,
             IViewBufferScope bufferScope,
             HtmlEncoder htmlEncoder,
-            UrlEncoder urlEncoder,
-            ExpressionTextCache expressionTextCache)
+            UrlEncoder urlEncoder)
             : base(
                   htmlGenerator,
                   viewEngine,
@@ -36,12 +33,6 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                   htmlEncoder,
                   urlEncoder)
         {
-            if (expressionTextCache == null)
-            {
-                throw new ArgumentNullException(nameof(expressionTextCache));
-            }
-
-            _expressionTextCache = expressionTextCache;
         }
 
         /// <inheritdoc />
@@ -88,6 +79,8 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                         typeof(ViewDataDictionary<TModel>).FullName),
                     nameof(viewContext));
             }
+
+            _expressionHelper = viewContext.HttpContext.RequestServices.GetRequiredService<ExpressionHelper>();
 
             base.Contextualize(viewContext);
         }
@@ -177,7 +170,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 new ViewDataDictionary<TModelItem>(ViewData, model: null),
                 MetadataProvider);
 
-            var expressionText = ExpressionHelper.GetExpressionText(expression, _expressionTextCache);
+            var expressionText = _expressionHelper.GetExpressionText(expression);
             if (modelExplorer == null)
             {
                 throw new InvalidOperationException(Resources.FormatHtmlHelper_NullModelMetadata(expressionText));
@@ -370,14 +363,20 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 htmlAttributes);
         }
 
-        protected string GetExpressionName<TResult>(Expression<Func<TModel, TResult>> expression)
+        /// <summary>
+        /// Gets the name for the lambda expression.
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="expression">The expression.</param>
+        /// <returns>The expression name.</returns>
+        public string GetExpressionName<TResult>(Expression<Func<TModel, TResult>> expression)
         {
             if (expression == null)
             {
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            return ExpressionHelper.GetExpressionText(expression, _expressionTextCache);
+            return _expressionHelper.GetExpressionText(expression);
         }
 
         protected ModelExplorer GetModelExplorer<TResult>(Expression<Func<TModel, TResult>> expression)
@@ -387,8 +386,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            var modelExplorer =
-                ExpressionMetadataProvider.FromLambdaExpression(expression, ViewData, MetadataProvider);
+            var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, ViewData, MetadataProvider);
             if (modelExplorer == null)
             {
                 var expressionName = GetExpressionName(expression);

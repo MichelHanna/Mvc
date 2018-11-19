@@ -166,7 +166,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddTransient<IHtmlHelper, HtmlHelper>();
             services.TryAddTransient(typeof(IHtmlHelper<>), typeof(HtmlHelper<>));
             services.TryAddSingleton<IHtmlGenerator, DefaultHtmlGenerator>();
-            services.TryAddSingleton<ExpressionTextCache>();
+            services.TryAddSingleton<ExpressionHelper>();
             services.TryAddSingleton<IModelExpressionProvider, ModelExpressionProvider>();
             services.TryAddSingleton<ValidationHtmlAttributeProvider, DefaultValidationHtmlAttributeProvider>();
 

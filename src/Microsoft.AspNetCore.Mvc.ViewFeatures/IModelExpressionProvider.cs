@@ -23,5 +23,17 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
         ModelExpression CreateModelExpression<TModel, TValue>(
             ViewDataDictionary<TModel> viewData,
             Expression<Func<TModel, TValue>> expression);
+
+        /// <summary>
+        /// Returns a <see cref="ModelExpression"/> instance describing the given <paramref name="expression"/>.
+        /// </summary>
+        /// <typeparam name="TModel">The type of the <paramref name="viewData"/>'s <see cref="ViewDataDictionary{T}.Model"/>.</typeparam>
+        /// <param name="viewData">The <see cref="ViewDataDictionary{TModel}"/> containing the <see cref="ViewDataDictionary{T}.Model"/> 
+        /// against which <paramref name="expression"/> is evaluated. </param>
+        /// <param name="expression">Expression name, relative to <c>viewData.Model</c>.</param>
+        /// <returns>A new <see cref="ModelExpression"/> instance describing the given <paramref name="expression"/>.</returns>
+        ModelExpression CreateModelExpression<TModel>(
+            ViewDataDictionary<TModel> viewData,
+            string expression);
     }
 }

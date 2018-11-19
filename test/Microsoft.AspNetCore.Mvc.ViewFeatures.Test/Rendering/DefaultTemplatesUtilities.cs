@@ -252,8 +252,6 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 .Setup(f => f.GetUrlHelper(It.IsAny<ActionContext>()))
                 .Returns(urlHelper);
 
-            var expressionTextCache = new ExpressionTextCache();
-
             if (htmlGenerator == null)
             {
                 htmlGenerator = HtmlGeneratorUtilities.GetHtmlGenerator(provider, urlHelperFactory.Object, options);
@@ -279,6 +277,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                .AddSingleton(Mock.Of<IViewComponentHelper>())
                .AddSingleton(innerHelper)
                .AddSingleton<IViewBufferScope, TestViewBufferScope>()
+               .AddSingleton<ExpressionHelper>()
                .BuildServiceProvider();
 
             httpContext.RequestServices = serviceProvider;
@@ -289,8 +288,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
                 provider,
                 new TestViewBufferScope(),
                 new HtmlTestEncoder(),
-                UrlEncoder.Default,
-                expressionTextCache);
+                UrlEncoder.Default);
 
             var viewContext = new ViewContext(
                 actionContext,

@@ -30,7 +30,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             HtmlEncoder = new HtmlTestEncoder();
             JsonHelper = Mock.Of<IJsonHelper>();
             MetadataProvider = new EmptyModelMetadataProvider();
-            ModelExpressionProvider = new ModelExpressionProvider(MetadataProvider, new ExpressionTextCache());
+            ModelExpressionProvider = new ModelExpressionProvider(MetadataProvider, new ExpressionHelper());
             UrlHelperFactory = new UrlHelperFactory();
         }
 
@@ -245,7 +245,7 @@ namespace Microsoft.AspNetCore.Mvc.Razor
             var serviceProvider = new ServiceCollection()
                 .AddSingleton(myService)
                 .AddSingleton(htmlHelper)
-                .AddSingleton(new ExpressionTextCache())
+                .AddSingleton(new ExpressionHelper())
                 .BuildServiceProvider();
 
             var httpContext = new DefaultHttpContext

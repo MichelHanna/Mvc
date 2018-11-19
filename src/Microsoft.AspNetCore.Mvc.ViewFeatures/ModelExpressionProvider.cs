@@ -10,32 +10,32 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
     /// <summary>
     /// A default implementation of <see cref="IModelMetadataProvider"/>.
     /// </summary>
-    public class ModelExpressionProvider : IModelExpressionProvider
+    internal class ModelExpressionProvider : IModelExpressionProvider
     {
         private readonly IModelMetadataProvider _modelMetadataProvider;
-        private readonly ExpressionTextCache _expressionTextCache;
+        private readonly ExpressionHelper _expressionHelper;
 
         /// <summary>
         /// Creates a  new <see cref="ModelExpressionProvider"/>.
         /// </summary>
         /// <param name="modelMetadataProvider">The <see cref="IModelMetadataProvider"/>.</param>
-        /// <param name="expressionTextCache">The <see cref="ExpressionTextCache"/>.</param>
+        /// <param name="expressionHelper">The <see cref="ExpressionHelper"/>.</param>
         public ModelExpressionProvider(
             IModelMetadataProvider modelMetadataProvider,
-            ExpressionTextCache expressionTextCache)
+            ExpressionHelper expressionHelper)
         {
             if (modelMetadataProvider == null)
             {
                 throw new ArgumentNullException(nameof(modelMetadataProvider));
             }
 
-            if (expressionTextCache == null)
+            if (expressionHelper == null)
             {
-                throw new ArgumentNullException(nameof(expressionTextCache));
+                throw new ArgumentNullException(nameof(expressionHelper));
             }
 
             _modelMetadataProvider = modelMetadataProvider;
-            _expressionTextCache = expressionTextCache;
+            _expressionHelper = expressionHelper;
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
                 throw new ArgumentNullException(nameof(expression));
             }
 
-            var name = ExpressionHelper.GetExpressionText(expression, _expressionTextCache);
+            var name = _expressionHelper.GetExpressionText(expression);
             var modelExplorer = ExpressionMetadataProvider.FromLambdaExpression(expression, viewData, _modelMetadataProvider);
             if (modelExplorer == null)
             {
@@ -62,6 +62,31 @@ namespace Microsoft.AspNetCore.Mvc.ViewFeatures
             }
 
             return new ModelExpression(name, modelExplorer);
+        }
+
+        /// <inheritdoc />
+        public ModelExpression CreateModelExpression<TModel>(
+            ViewDataDictionary<TModel> viewData,
+            string expression)
+        {
+            if (viewData == null)
+            {
+                throw new ArgumentNullException(nameof(viewData));
+            }
+
+            if (expression == null)
+            {
+                throw new ArgumentNullException(nameof(expression));
+            }
+
+            var modelExplorer = ExpressionMetadataProvider.FromStringExpression(expression, viewData, _modelMetadataProvider);
+            if (modelExplorer == null)
+            {
+                throw new InvalidOperationException(
+                    Resources.FormatCreateModelExpression_NullModelMetadata(nameof(IModelMetadataProvider), expression));
+            }
+
+            return new ModelExpression(expression, modelExplorer);
         }
     }
 }

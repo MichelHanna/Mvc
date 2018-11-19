@@ -28,11 +28,6 @@
     "Kind": "Removal"
   },
   {
-    "TypeId": "public class Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider : Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider",
-    "MemberId": "public .ctor(Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider modelMetadataProvider, Microsoft.AspNetCore.Mvc.ViewFeatures.Internal.ExpressionTextCache expressionTextCache)",
-    "Kind": "Removal"
-  },
-  {
     "TypeId": "public class Microsoft.AspNetCore.Mvc.ViewComponents.DefaultViewComponentHelper : Microsoft.AspNetCore.Mvc.IViewComponentHelper, Microsoft.AspNetCore.Mvc.ViewFeatures.IViewContextAware",
     "MemberId": "public .ctor(Microsoft.AspNetCore.Mvc.ViewComponents.IViewComponentDescriptorCollectionProvider descriptorProvider, System.Text.Encodings.Web.HtmlEncoder htmlEncoder, Microsoft.AspNetCore.Mvc.ViewComponents.IViewComponentSelector selector, Microsoft.AspNetCore.Mvc.ViewComponents.IViewComponentInvokerFactory invokerFactory, Microsoft.AspNetCore.Mvc.ViewFeatures.Internal.IViewBufferScope viewBufferScope)",
     "Kind": "Removal"
@@ -71,5 +66,14 @@
     "TypeId": "public class Microsoft.AspNetCore.Mvc.ViewFeatures.ViewResultExecutor : Microsoft.AspNetCore.Mvc.ViewFeatures.ViewExecutor, Microsoft.AspNetCore.Mvc.Infrastructure.IActionResultExecutor<Microsoft.AspNetCore.Mvc.ViewResult>",
     "MemberId": "public .ctor(Microsoft.Extensions.Options.IOptions<Microsoft.AspNetCore.Mvc.MvcViewOptions> viewOptions, Microsoft.AspNetCore.Mvc.Infrastructure.IHttpResponseStreamWriterFactory writerFactory, Microsoft.AspNetCore.Mvc.ViewEngines.ICompositeViewEngine viewEngine, Microsoft.AspNetCore.Mvc.ViewFeatures.ITempDataDictionaryFactory tempDataFactory, System.Diagnostics.DiagnosticSource diagnosticSource, Microsoft.Extensions.Logging.ILoggerFactory loggerFactory, Microsoft.AspNetCore.Mvc.ModelBinding.IModelMetadataProvider modelMetadataProvider)",
     "Kind": "Removal"
+  },
+  {
+    "TypeId": "public class Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpressionProvider : Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider",
+    "Kind": "Removal"
+  },
+  {
+    "TypeId": "public interface Microsoft.AspNetCore.Mvc.ViewFeatures.IModelExpressionProvider",
+    "MemberId": "Microsoft.AspNetCore.Mvc.ViewFeatures.ModelExpression CreateModelExpression<T0>(Microsoft.AspNetCore.Mvc.ViewFeatures.ViewDataDictionary<T0> viewData, System.String expression)",
+    "Kind": "Addition"
   }
 ]
